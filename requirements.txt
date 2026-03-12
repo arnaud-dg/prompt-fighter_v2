@@ -1,5 +1,6 @@
 streamlit
 openai
+anthropic
 requests
 pillow
 boto3

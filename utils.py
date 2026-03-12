@@ -7,6 +7,7 @@ import os
 import boto3
 import requests
 from openai import OpenAI
+import anthropic
 from dotenv import load_dotenv
 
 # =========================
@@ -16,12 +17,14 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
+anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
 # =========================
@@ -118,6 +121,15 @@ def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p
         )
         data = r.json()
         return data["choices"][0]["message"]["content"].strip()
+
+    if model == "Claude":
+        message = anthropic_client.messages.create(
+            model="claude-opus-4-6",
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return message.content[0].text.strip()
 
     return "Modèle non reconnu."
 
