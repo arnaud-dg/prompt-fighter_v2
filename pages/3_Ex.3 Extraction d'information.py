@@ -105,7 +105,7 @@ def parse_evaluation(text: str):
 # =========================
 # Helpers UI
 # =========================
-def score_color(score: int, maximum: int = 4):
+def score_color(score: int, maximum: int = 5):
     ratio = score / maximum
     if ratio >= 0.8:
         return "#d4edda", "#155724", "#28a745"
@@ -125,7 +125,7 @@ def note_color(note: int, maximum: int = 20):
         return "#f8d7da", "#721c24", "#dc3545"
 
 
-def render_score_card(title: str, score: int, maximum: int = 4):
+def render_score_card(title: str, score: int, maximum: int = 5):
     bg, fg, border = score_color(score, maximum)
     st.markdown(
         f"""

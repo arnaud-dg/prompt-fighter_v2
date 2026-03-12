@@ -103,7 +103,7 @@ def parse_evaluation(text: str):
 # =========================
 # Helpers UI
 # =========================
-def score_color(score: int, maximum: int = 4):
+def score_color(score: int, maximum: int = 5):
     ratio = score / maximum
     if ratio >= 0.8:
         return "#d4edda", "#155724", "#28a745"
