@@ -23,6 +23,15 @@ AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
+# Identifiants des modèles configurables via l'env
+MODEL_IDS = {
+    "Mistral_1": os.getenv("MISTRAL_MODEL_1", "mistral-small-latest"),
+    "Mistral_2": os.getenv("MISTRAL_MODEL_2", "mistral-medium-latest"),
+    "Mistral_3": os.getenv("MISTRAL_MODEL_3", "mistral-large-latest"),
+    "Mistral_4": os.getenv("MISTRAL_MODEL_4", "mistral-large-2411"),
+    "OpenAI_1":  os.getenv("OPENAI_MODEL_1",  "gpt-4o"),
+}
+
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
@@ -91,9 +100,11 @@ def render_pseudo_sidebar():
 # LLM
 # =========================
 def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p: float) -> str:
-    if model == "OpenAI":
+    model_id = MODEL_IDS.get(model)
+
+    if model.startswith("OpenAI_"):
         response = openai_client.chat.completions.create(
-            model="gpt-4o",
+            model=model_id,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
             max_tokens=max_tokens,
@@ -101,19 +112,18 @@ def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p
         )
         return response.choices[0].message.content.strip()
 
-    if model == "Mistral":
+    if model.startswith("Mistral_"):
         headers = {
             "Authorization": f"Bearer {MISTRAL_API_KEY}",
             "Content-Type": "application/json",
         }
         payload = {
-            "model": "mistral-medium-latest",
+            "model": model_id,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": temperature,
             "max_tokens": max_tokens,
             "top_p": top_p,
         }
-
         r = requests.post(
             "https://api.mistral.ai/v1/chat/completions",
             headers=headers,
@@ -121,15 +131,6 @@ def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p
         )
         data = r.json()
         return data["choices"][0]["message"]["content"].strip()
-
-    if model == "Claude":
-        message = anthropic_client.messages.create(
-            model="claude-opus-4-6",
-            max_tokens=max_tokens,
-            temperature=temperature,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return message.content[0].text.strip()
 
     return "Modèle non reconnu."
 

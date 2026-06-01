@@ -208,7 +208,7 @@ init_session()
 # =========================
 pseudo = render_pseudo_sidebar()
 
-modele = st.sidebar.selectbox("Choix du modèle LLM", ["Mistral", "OpenAI", "Claude"])
+modele = st.sidebar.selectbox("Choix du modèle LLM", ["Mistral_1", "Mistral_2", "Mistral_3", "Mistral_4", "OpenAI_1"])
 
 temperature = 0.7
 max_tokens = 1000
