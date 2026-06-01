@@ -15,24 +15,30 @@ from dotenv import load_dotenv
 # =========================
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_REGION = os.getenv("AWS_REGION")
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 
-# Identifiants des modèles configurables via l'env
-MODEL_IDS = {
-    "Mistral_1": os.getenv("MISTRAL_MODEL_1", "mistral-small-latest"),
-    "Mistral_2": os.getenv("MISTRAL_MODEL_2", "mistral-medium-latest"),
-    "Mistral_3": os.getenv("MISTRAL_MODEL_3", "mistral-large-latest"),
-    "Mistral_4": os.getenv("MISTRAL_MODEL_4", "mistral-large-2411"),
-    "OpenAI_1":  os.getenv("OPENAI_MODEL_1",  "gpt-4o"),
+# Clés API par option (une clé différente par choix de modèle)
+API_KEYS = {
+    "Mistral_1": os.getenv("MISTRAL_API_KEY_1"),
+    "Mistral_2": os.getenv("MISTRAL_API_KEY_2"),
+    "Mistral_3": os.getenv("MISTRAL_API_KEY_3"),
+    "Mistral_4": os.getenv("MISTRAL_API_KEY_4"),
+    "OpenAI_1":  os.getenv("OPENAI_API_KEY_1"),
 }
 
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+# Modèle fixe par fournisseur
+MODEL_IDS = {
+    "Mistral_1": "mistral-small-latest",
+    "Mistral_2": "mistral-small-latest",
+    "Mistral_3": "mistral-small-latest",
+    "Mistral_4": "mistral-small-latest",
+    "OpenAI_1":  "gpt-4o",
+}
+
 anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
@@ -100,10 +106,12 @@ def render_pseudo_sidebar():
 # LLM
 # =========================
 def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p: float) -> str:
+    api_key = API_KEYS.get(model)
     model_id = MODEL_IDS.get(model)
 
     if model.startswith("OpenAI_"):
-        response = openai_client.chat.completions.create(
+        client = OpenAI(api_key=api_key)
+        response = client.chat.completions.create(
             model=model_id,
             messages=[{"role": "user", "content": prompt}],
             temperature=temperature,
@@ -114,7 +122,7 @@ def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p
 
     if model.startswith("Mistral_"):
         headers = {
-            "Authorization": f"Bearer {MISTRAL_API_KEY}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
         payload = {
