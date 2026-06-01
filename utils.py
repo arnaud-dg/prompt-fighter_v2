@@ -130,6 +130,8 @@ def call_llm(prompt: str, model: str, temperature: float, max_tokens: int, top_p
             json=payload,
         )
         data = r.json()
+        if "choices" not in data:
+            raise ValueError(f"Erreur API Mistral ({r.status_code}) : {data}")
         return data["choices"][0]["message"]["content"].strip()
 
     return "Modèle non reconnu."
