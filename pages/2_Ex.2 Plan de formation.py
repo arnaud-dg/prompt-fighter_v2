@@ -1,4 +1,5 @@
 import re
+import markdown as md_lib
 import streamlit as st
 from contenu_promptfight import PROMPTFIGHT_CONTENT
 from utils import (
@@ -187,7 +188,6 @@ st.markdown(
     <style>
     .block-container {
         padding-top: 2rem;
-        max-width: 900px;
     }
     div[data-testid="stTextArea"] textarea {
         font-size: 0.96rem;
@@ -378,7 +378,7 @@ if st.session_state.get("ex2_response_generated"):
             border:1px solid #d6ead8;
             box-shadow:0 2px 8px rgba(0,0,0,0.04);
         ">
-        {st.session_state["ex2_response_generated"]}
+        {md_lib.markdown(st.session_state["ex2_response_generated"])}
         </div>
         """,
         unsafe_allow_html=True,
@@ -403,7 +403,7 @@ if st.session_state.get("ex2_prompt_evaluation"):
         "Précision du format de sortie",
     ]:
         if label in scores:
-            render_score_card(label, scores[label], maximum=4)
+            render_score_card(label, scores[label], maximum=5)
 
     if evaluation_text:
         st.markdown(
@@ -413,10 +413,9 @@ if st.session_state.get("ex2_prompt_evaluation"):
                 padding:16px;
                 border-radius:12px;
                 border:1px solid #d9e2ff;
-                white-space: pre-wrap;
                 box-shadow:0 2px 8px rgba(0,0,0,0.04);
             ">
-            {evaluation_text}
+            {md_lib.markdown(evaluation_text)}
             </div>
             """,
             unsafe_allow_html=True,
