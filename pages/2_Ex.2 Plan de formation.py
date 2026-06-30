@@ -378,7 +378,7 @@ if st.session_state.get("ex2_response_generated"):
             border:1px solid #d6ead8;
             box-shadow:0 2px 8px rgba(0,0,0,0.04);
         ">
-        {md_lib.markdown(st.session_state["ex2_response_generated"])}
+        {md_lib.markdown(st.session_state["ex2_response_generated"], extensions=["tables", "fenced_code", "nl2br"])}
         </div>
         """,
         unsafe_allow_html=True,
@@ -415,7 +415,7 @@ if st.session_state.get("ex2_prompt_evaluation"):
                 border:1px solid #d9e2ff;
                 box-shadow:0 2px 8px rgba(0,0,0,0.04);
             ">
-            {md_lib.markdown(evaluation_text)}
+            {md_lib.markdown(evaluation_text, extensions=["tables", "fenced_code", "nl2br"])}
             </div>
             """,
             unsafe_allow_html=True,
